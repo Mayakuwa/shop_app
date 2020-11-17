@@ -16,9 +16,9 @@ class ProductItem extends StatelessWidget {
     final product = Provider.of<Product>(context);
     //GridTileをClipRRectでLappingすることで、radiusを表現している
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10.0),
-      child: GridTile(
-        //ImageをGestureDetectorでLapすることでTapできるようになる
+        borderRadius: BorderRadius.circular(10.0),
+        child: GridTile(
+          //ImageをGestureDetectorでLapすることでTapできるようになる
           child: GestureDetector(
               onTap: () {
                 Navigator.of(context).pushNamed(
@@ -27,23 +27,25 @@ class ProductItem extends StatelessWidget {
                 );
               },
               child: Image.network(
-              product.imageUrl,
-              fit: BoxFit.cover
-          )
+                  product.imageUrl,
+                  fit: BoxFit.cover
+              )
           ),
           footer: GridTileBar(
             backgroundColor: Colors.black87,
-              leading: IconButton(
-                  icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
-                  onPressed: () {
-                    product.toggleFavoriteStatus();
-                  },
-                  color: Theme.of(context).accentColor,
-              ),
-              title: Text(
-                  product.title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white)),
+            leading: Consumer<Product>(
+              builder: (ctx, product, _) => IconButton(
+              icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
+              onPressed: () {
+                product.toggleFavoriteStatus();
+              },
+              color: Theme.of(context).accentColor,
+            ),
+            ),
+            title: Text(
+                product.title,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white)),
             trailing: IconButton(
               icon: Icon(Icons.shopping_cart),
               onPressed: () {
@@ -52,7 +54,7 @@ class ProductItem extends StatelessWidget {
               color: Theme.of(context).accentColor,
             ),
           ),
-      ),
+        ),
     );
   }
 }
