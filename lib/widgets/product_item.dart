@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
+import 'package:shop_app/providers/product.dart';
+import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
-
-  ProductItem(this.id, this.title, this.imageUrl);
-
-  final String id;
-  final String title;
-  final String imageUrl;
+  //
+  // ProductItem(this.id, this.title, this.imageUrl);
+  //
+  // final String id;
+  // final String title;
+  // final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
+    final product = Provider.of<Product>(context);
     //GridTileをClipRRectでLappingすることで、radiusを表現している
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
@@ -20,23 +23,25 @@ class ProductItem extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).pushNamed(
                     ProductDetailScreen.routeName,
-                    arguments: id
+                    arguments: product.id
                 );
               },
               child: Image.network(
-              imageUrl,
+              product.imageUrl,
               fit: BoxFit.cover
           )
           ),
           footer: GridTileBar(
             backgroundColor: Colors.black87,
               leading: IconButton(
-                  icon: Icon(Icons.favorite),
-                  onPressed: () => null,
+                  icon: Icon(product.isFavorite ? Icons.favorite : Icons.favorite_border),
+                  onPressed: () {
+                    product.toggleFavoriteStatus();
+                  },
                   color: Theme.of(context).accentColor,
               ),
               title: Text(
-                  title,
+                  product.title,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white)),
             trailing: IconButton(
