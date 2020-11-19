@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/screens/cart_screen.dart';
+import 'package:shop_app/widgets/app_drawer.dart';
 import 'package:shop_app/widgets/badge.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/widgets/product_grid.dart';
@@ -61,6 +62,7 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
             )
           ],
       ),
+      drawer: AppDrawer(),
       //GridView.builderはListView同様、表示する要素が事前にわからない場合に利用する書き方です。
       // itemBuilderは画面表示時に実行されるため、無限にグリッドを作成することが可能です。
       body: ProductsGrid(_showOnlyFavorites),
