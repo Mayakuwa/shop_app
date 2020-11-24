@@ -66,14 +66,16 @@ class Products with ChangeNotifier {
   // }
 
   Future<void> addProduct(Product product) {
-    const url = 'https://my-shop-388ad.firebaseio.com/products.json';
+    const url = 'https://my-shop-388ad.firebaseio.com/products';
     return http.post(url, body: json.encode({
       'title': product.title,
       'description': product.description,
       'imageUrl':product.imageUrl,
       'price': product.price,
       'isFavorite': product.isFavorite,
-    })).then((response) {
+    })
+    )
+        .then((response) {
       final newProduct = Product(
           title: product.title,
           description: product.description,
@@ -83,6 +85,9 @@ class Products with ChangeNotifier {
       );
       _items.add(newProduct);
       notifyListeners();
+    }).catchError((error) {
+      print(error);
+      throw error;
     });
   }
 
