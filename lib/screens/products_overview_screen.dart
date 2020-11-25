@@ -5,6 +5,7 @@ import 'package:shop_app/widgets/app_drawer.dart';
 import 'package:shop_app/widgets/badge.dart';
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/widgets/product_grid.dart';
+import 'package:shop_app/providers/products.dart';
 
 enum FilterOptions {
   Favorite,
@@ -19,6 +20,30 @@ class ProductOverViewScreen extends StatefulWidget {
 class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
 
   var _showOnlyFavorites = false;
+  var _isInit = true;
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if(_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +90,9 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
       drawer: AppDrawer(),
       //GridView.builderはListView同様、表示する要素が事前にわからない場合に利用する書き方です。
       // itemBuilderは画面表示時に実行されるため、無限にグリッドを作成することが可能です。
-      body: ProductsGrid(_showOnlyFavorites),
+      body: _isLoading ?
+      Center(child: CircularProgressIndicator())
+          : ProductsGrid(_showOnlyFavorites),
     );
   }
 }
