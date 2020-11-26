@@ -24,6 +24,35 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
+  Future<void> fetchAndSetOrder() async {
+    const url = 'https://my-shop-388ad.firebaseio.com/orders.json';
+    final response = await http.get(url);
+    final List<OrderItem> loadedOrders = [];
+    //dynamicで宣言すると、動的な型宣言が可能となる
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    //エラーハンドリング
+    if(extractedData == null) {
+      return;
+    }
+    extractedData.forEach((orderId, orderData) {
+      loadedOrders.add(
+          OrderItem(
+              id: orderId,
+              amout: orderData['amout'],
+              dateTime: DateTime.parse(orderData['dateTime']),
+              products: (orderData['products'] as List<dynamic>)
+                    .map((item) => CartItem(
+                    id: item['id'],
+                    title: item['title'],
+                    quantity: item['quantity'],
+                    price: item['price'])).toList(),
+              ),
+          );
+    });
+    _orders = loadedOrders.reversed.toList();
+    notifyListeners();
+  }
+
   Future<void> addOrder(List<CartItem> cardProducts, double  total) async {
     const url = 'https://my-shop-388ad.firebaseio.com/orders.json';
     final timeStamp = DateTime.now();
