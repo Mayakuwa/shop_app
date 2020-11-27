@@ -143,6 +143,8 @@ class _AuthCardState extends State<AuthCard> {
             _authData['password']
         );
       }
+      // // go to product-overview screen
+      // Navigator.of(context).pushReplacementNamed('/products-overview');
     } on HttpException catch(error) {
       var errorMessage = 'Authenticate failed';
       if(error.toString().contains('EMAIL_EXISTS')) {

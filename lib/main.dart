@@ -24,8 +24,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => Auth()
         ),
-        ChangeNotifierProvider(
-          create: (ctx) => Products(),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: null,
+          update: (ctx, auth, previousProducts) => Products(
+              auth.token,
+              previousProducts == null ? []: previousProducts.items
+          ),
         ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
@@ -35,14 +39,15 @@ class MyApp extends StatelessWidget {
         ),
       ],
       // productに関するWidgetだけ監視（not to Material App）
-      child: MaterialApp(
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
         title: 'My Shop',
         theme: ThemeData(
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
           fontFamily: 'Lato',
         ),
-        home: AuthScreen(),
+        home: auth.isAuth ? ProductOverViewScreen() :  AuthScreen(),
         routes: {
           //ルート設定
           ProductDetailScreen.routeName:  (ctx) => ProductDetailScreen(),
@@ -52,6 +57,7 @@ class MyApp extends StatelessWidget {
           EditProductScreen.routeName: (ctx) => EditProductScreen()
         },
       ),
+      )
     );
   }
 }
