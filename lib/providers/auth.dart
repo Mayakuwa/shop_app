@@ -3,11 +3,13 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shop_app/models/http_exception.dart';
+import 'dart:async';
 
 class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _userId;
+  Timer _authTimer;
   
   bool get isAuth {
     return token != null;
@@ -41,6 +43,7 @@ class Auth with ChangeNotifier {
                 'returnSecureToken': true
               }));
       final responseDate = json.decode(response.body);
+      print(responseDate);
       if (responseDate['error'] != null) {
         throw HttpException(responseDate['error']['message']);
       }
@@ -53,6 +56,7 @@ class Auth with ChangeNotifier {
               ),
           ),
       );
+      _autoLogout();
       notifyListeners();
     } catch (error){
       throw error;
@@ -71,7 +75,21 @@ class Auth with ChangeNotifier {
     _token = null;
     _userId = null;
     _expiryDate = null;
+    if(_authTimer != null) {
+      _authTimer.cancel();
+      _authTimer = null;
+    }
     notifyListeners();
+  }
+
+  void _autoLogout() {
+    if(_authTimer != null) {
+      //timerがすでに存在したらキャンセルする
+      _authTimer.cancel();
+    }
+    final timeToExpiry = _expiryDate.difference(DateTime.now()).inSeconds;
+    //timeToExpiryを超えたら、logoutさせる
+    _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
   }
 
 }
